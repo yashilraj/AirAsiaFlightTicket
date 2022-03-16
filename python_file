@@ -1,0 +1,450 @@
+import mysql.connector as connector
+import random as r, smtplib, math, tabulate as t
+from email.message import EmailMessage
+
+# Configuring MySQL & Creating database
+connection = connector.connect(host='localhost',user='root',passwd='yash')
+cursor = connection.cursor()
+cursor.execute('create database if not exists airasia;')
+connection.commit()
+connection.close()
+
+connection = connector.connect(host='localhost',user='root',passwd='yash',database='airasia')
+cursor = connection.cursor()
+cursor.execute('create table if not exists customers(ticketID varchar(10), name varchar(20), phnum varchar(10), gmail varchar(30), destination varchar(20), seat varchar(4), fare varchar(5), status varchar(5));')
+connection.commit()
+
+# Functions and processes starts from here [Menu at bottom]
+# OPTION 1
+def aboutMe():
+    message = """\n\n
+    A few compliments for you are given in the message below. If you found it. You're AWESOME.
+    __________________________________________________________________________________________________________________________________________
+
+    My name is Yashilraj.
+    
+    A quick intro for my project, my project books ticket for passengers to travel to selected cities
+    from Visakhapatnam, India.
+    
+    It took me hours to complete in writing the project. Lots of brainstorming. Lots of errors.
+    Lots of bug fixes. Lots of trails. And what it only concerns me is the "Experience" I experienced.
+
+    And I have a keen interest in doing what I love.
+
+    Steve Jobs once said: 
+    "Your WORK is going to fill a large part of your life, and the only way to be truly satisfied is to do what you
+    believe is GREAT WORK. And the only way to do great work is to LOVE WHAT YOU DO. If you haven't found it yet,
+    Keep looking. Don't settle."
+
+    Coming to the project, to make my project interesting I've sent an email as an "OTP-Verfication" to buy ticket,
+    instead of actually buying from bank account. And that's why I call this "Static Flight Ticket Booking".
+
+    If you did read the message till here, then Congratulations.
+    You've got these great quality called "ENTHUSIASM" and "APPRECIATION".
+    - Yashilraj
+    ___________________________________________________________________________________________________________________________________________
+    """
+    print(message)
+
+# OPTION 2
+def bookTickets():
+    print("\t\tConnecting with AirAsia family")
+    print("\t\t==============================\n")
+
+    def Airlines():
+        def international():
+            print("\nAvailable International Flights at Visakhapatnam International Airport")
+            print("========================================================================\n")
+            print("Visakhapatnam(VTZ) - Singapore(SIN)")
+            print("Visakhapatnam(VTZ) - Dubai(DXB)")
+            print("\nEnter CITY CODE")
+            def internationalFlightChoice():
+                global destination
+                choice = input("Type your destination city code: ")   
+                if choice.upper() == 'SIN' or choice.upper() == 'SINGAPORE':
+                    destination = 'Singapore'
+                elif choice.upper() == 'DXB' or choice.upper() == 'DUBAI':
+                    destination = 'Dubai'
+                elif choice == 'exit':
+                    exit()
+                else:
+                    print("ERROR: Please re-check your destination.")
+                    internationalFlightChoice()
+            internationalFlightChoice()
+
+        def domestic():
+            print("\nAvailable Flights at Visakhapatnam International Airport")
+            print("========================================================\n")
+            print("Visakhapatnam(VTZ) - Bangalore(BLR)")
+            print("Visakhapatnam(VTZ) - Chennai(MAA)")
+            print("Visakhapatnam(VTZ) - Mumbai(BOM)")
+            print("\nEnter CITY CODE")
+            def domesticFlightChoice():
+                global destination
+                choice = input("Type your destination code: ")   
+                if choice.upper() == 'BLR' or choice.upper() == 'BANGALORE':
+                    destination = 'Bangalore'
+                elif choice.upper() == 'MAA' or choice.upper() == 'CHENNAI':
+                    destination = 'Chennai'
+                elif choice.upper() == 'BOM' or choice.upper() == 'MUMBAI':
+                    destination = 'Mumbai'
+                elif choice == 'exit':
+                    exit()
+                else:
+                    print("ERROR: Please re-check your destination.")
+                    domesticFlightChoice()
+            domesticFlightChoice()
+
+        def AirlineChoice():
+            print("\n1. International flights\n2. Domestic flights")
+            choice = input("\nEnter your choice: ")
+            if choice == '1':
+                international()
+            elif choice == '2':
+                domestic()
+            else:
+                print("ERROR: Pick only 1 or 2")
+                AirlineChoice()
+        AirlineChoice()
+    Airlines()
+    print(f'Your destination is set for {destination}')
+    input("Press [Enter] to continue:")
+
+    # updating database
+    cursor.execute(f"update customers set destination = '{destination}' where phnum = '{phone_number}'")
+    connection.commit()
+
+    def seatSelection():
+        def flightSeats():
+            print("  \_______________/")
+            print("    Cockpit here\n")
+            print("--[Business Class]--")
+            print(" B1 B2   |  B3 B4")
+            print(" B5 B6   |  B7 B8")
+            print("--[Economy Class]--")
+            print(" E1 E2   |  E3 E4")
+            print(" E5 E6   |  E7 E8")
+            print(" E9 E10  |  E11 E12")
+            print(" E13 E14 |  E15 E16\n\n")
+            print("Due to shortage of flights during pandemic, only one seat is made to opt.")
+
+        def internationalFlightSeats():
+            global seat, class_choice
+            flightSeats()
+            print("Press B for Business class [60000 - 65000 INR]\nPress E for Economy class [30000 - 35000 INR]")
+            def businessClass():
+                global seat, total_fare
+                business_seats = ['B1','B2','B3','B4','B5','B6','B7','B8']
+                seat = input("What's your business class seat number? ")
+                if seat.upper() not in business_seats:
+                    print("ERROR: Enter correct seat number.")
+                    businessClass()
+                total_fare = r.randint(60000,65000)
+            def economyClass():
+                global seat, total_fare
+                economy_seats = ['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10','E11','E12','E13','E14','E15','E16']
+                seat = input("What's your economy class seat number? ")
+                if seat.upper() not in economy_seats:
+                    print("ERROR: Enter correct seat number.")
+                total_fare = r.randint(30000,35000)       
+            def businessOrEconomy():
+                global class_choice
+                class_choice = input("\nWhat's your choice? ")
+                if class_choice.upper() == 'B':
+                    class_choice = "Business Class"
+                    businessClass()
+                elif class_choice.upper() == 'E':
+                    class_choice = "Economy Class"
+                    economyClass()
+                else:
+                    print("ERROR: You've entered incorrect choice. Try again!\n")
+                    businessOrEconomy()
+            businessOrEconomy()
+
+        def domesticFlightSeats():
+            global seat, class_choice
+            flightSeats()
+            print("Press B for Business class [4000 - 5500 INR]\nPress E for Economy class [3000 - 4100 INR]")
+            def businessClass():
+                global seat, total_fare
+                business_seats = ['B1','B2','B3','B4','B5','B6','B7','B8']
+                seat = input("What's your business class seat number? ")
+                total_fare = r.randint(4000,5500)
+                if seat.upper() not in business_seats:
+                    print("ERROR: Enter correct seat number.")
+                    businessClass()
+            def economyClass():
+                global seat, total_fare
+                economy_seats = ['E1','E2','E3','E4','E5','E6','E7','E8','E9','E10','E11','E12','E13','E14','E15','E16']
+                seat = input("What's your economy class seat number? ")
+                total_fare = r.randint(3000,4100)
+                if seat.upper() not in economy_seats:
+                    print("ERROR: Enter correct seat number.")
+                    economyClass()
+            def businessOrEconomy():
+                global class_choice
+                class_choice = input("\nWhat's your choice? ")
+                if class_choice.upper() == 'B':
+                    class_choice = "Business Class"
+                    businessClass()
+                elif class_choice.upper() == 'E':
+                    class_choice = "Economy Class"
+                    economyClass()
+                else:
+                    print("ERROR: You've entered incorrect choice. Try again!\n")
+                    businessOrEconomy()
+            businessOrEconomy()
+    
+        domestic = ('Bangalore','Chennai','Mumbai')
+        if destination in domestic:
+            domesticFlightSeats()
+        else:
+            internationalFlightSeats()
+        # updating database
+        cursor.execute(f"update customers set seat = '{seat.upper()}' where phnum = '{phone_number}'")
+        connection.commit() 
+    seatSelection()
+
+    def paymentProcess():
+        print(f"Total fare is {total_fare} INR")
+        input(f"\nPress [Enter] to buy ticket.")
+        print(f"The ticket of your flight from VISAKHAPATNAM to {destination.upper()} is being booked for next week.")
+        input("\nPress [Enter] to proceed to billing.")
+        print("\nWe're making things easy for you🤗")
+        print("\nRedirecting to payment portal..")
+        # updating database
+        cursor.execute(f"update customers set fare = '{total_fare}' where phnum = '{phone_number}'")
+        connection.commit()
+    paymentProcess()
+
+    def displayTicket(): # Generating Ticket ID
+        global ticket_id
+        alphabets = 'qwertyuiopasdfghjklzxcvbnm'
+        ticket_id = f'{name[:3]}{seat}'
+        for k in range(3):
+            ticket_id += r.choice(alphabets)
+        # updating database
+        cursor.execute(f"update customers set ticketID = '{ticket_id}' where phnum = '{phone_number}'")
+        connection.commit()
+
+        # printing Ticket in terminal
+        print("\nBoom🔥\nYou have bought a ticket from AirAsia😃. Welcome Aboard!")
+        print(f"""
+        Name: {name.upper()}
+        Destination: {destination.upper()}
+        Class: {class_choice.upper()}
+        Seat: {seat.upper()}        
+        Total fare: {total_fare} INR
+        Ticket ID: {ticket_id.upper()}
+        """)
+
+    def verificationAndConfirmation():
+        otp_choice = input("Pick your choice\n1. Gmail\n2. Recaptcha\nEnter your choice: ")
+       
+        if otp_choice == '1': # sending OTP to email
+            otp = ''
+            for _ in range(6) :
+                otp += str(math.floor(r.random() * 10))
+            msg =  EmailMessage()
+            msg.set_content(f'"{otp}" is your OTP to buy {seat} ticket in {class_choice} with total fare of {total_fare} INR.\n\t- Team AirAsia\n\n\t-Yashilraj')
+            msg['Subject'] = 'OTP for verfication'
+            msg['From'] = "airasia.yashilraj@gmail.com"
+            msg['To'] = user_gmail_add
+
+            # Configuring SMTP
+            server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            server.login('airasia.yashilraj@gmail.com','OnlyforCSproject2022')
+            server.send_message(msg)
+
+            user_otp = input("Enter OTP sent to you: ")
+            if user_otp == otp.upper():
+                print("OTP successfully matched.")
+                # updating data into database
+                cursor.execute(f"update customers set status = 'Paid' where phnum = '{phone_number}'")
+                connection.commit()
+                displayTicket()
+            else:
+                print("Incorrect OTP. Your ticket is cancelled.")
+                cursor.execute(f"delete from customers where phnum = '{phone_number}'")
+                connection.commit()
+
+        elif otp_choice == '2': # Recaptcha
+            numbers = '0123456789'
+            alphabets = 'qwertyuiopasdfghjklzxcvbnm'
+            recaptcha = ''
+            for k in range(2):
+                recaptcha += r.choice(alphabets)+r.choice(numbers)
+            print(f"'{recaptcha}' is your Recaptcha for confirming your purchase.")
+            user_recaptcha = input("Enter recaptcha: ")
+            if user_recaptcha == recaptcha:
+                # updating data into database
+                print("Recaptcha successfully matched.")
+                cursor.execute(f"update customers set status = 'Paid' where phnum = '{phone_number}'")
+                connection.commit()
+                displayTicket()
+            else:
+                print("Incorrect recaptcha. Your ticket is cancelled.")
+                cursor.execute(f"delete from customers where phnum = '{phone_number}'")
+                connection.commit()
+
+        else: 
+            print("ERROR: Enter a valid choice.")
+            verificationAndConfirmation()
+    verificationAndConfirmation()
+
+# OPTION 3
+def cancelBooking():
+    user_phone_number = input("Enter your phone number: ")
+    if len(str(user_phone_number)) != 10:
+        print(f"ERROR: phone number should be of 10 numbers. {len(str(user_phone_number))} are given. Try Again!!\n")
+        cancelBooking()
+
+    # Database
+    cursor.execute((f"select count(*) from customers where phnum = {user_phone_number};"))
+    count_records = cursor.fetchall()
+    if count_records[0][0] !=0:
+        cursor.execute(f"select * from customers where phnum = {user_phone_number};")
+        all_details = cursor.fetchall()
+        connection.commit()
+
+        print("\n")
+        print(t.tabulate(all_details))
+        print("\n")
+
+        user_ticket_id = input("Enter your Ticket ID to cancel: ")
+        if ticket_id.upper() == user_ticket_id.upper():
+            user_choice_cancel_booking = input("Are you sure you wanna cancel booking? [Y/N] : ")
+            if user_choice_cancel_booking.lower() == 'n':
+                print("No worries. Your ticket is valid for boarding. Happy journey!")
+                exit()
+            elif user_choice_cancel_booking.lower() == 'y':
+                cursor.execute(f"delete from customers where ticketID = {user_ticket_id};")
+                connection.commit()
+                print("Your ticket is cancelled. Your amount will be refunded soon to your payment account with '30%' deduction (cancellation charges).")
+                print("Visit us soon. Thank you.")
+                exit()
+        else:
+            print("ERROR: You've entered incorret Ticket ID. Try again!")
+    else:
+        print("No record found.")
+        input("Press [ENTER] to close: ")
+        exit()
+
+# OPTION 4
+def database():
+    query = f"select * from customers;"
+    cursor.execute(query)
+    all_details = cursor.fetchall()
+    connection.commit()
+    if all_details!=[]:
+        print("\n=================================================================================")
+        print(t.tabulate(all_details))
+        print("=================================================================================\n")
+    else:
+        print("No records found")
+        input("Press [ENTER] to close: ")
+        exit()
+
+# Program starts from here
+def menu():
+    print("\n\n\t\t\t\t\tAirAsia Flight Ticket Booking")
+    print("\t\t\t\t\t=============================\n")
+    print("\t\t\tJoin us now to continue!!\n")
+    print(f"\t\t\t1. About ME")
+    print(f"\t\t\t2. Book tickets")
+    print(f"\t\t\t3. Cancel Booking")
+    print(f"\t\t\t4. Access database")
+    print(f"\t\t\t5. Exit")
+    print("\t\t\tKindly checkout 'ABOUT ME' with those golden hands.")
+
+def user_choice():
+    choice = input("\nPick your option: ")
+    if choice == '1':
+        aboutMe()
+    elif choice == '2':
+        def userData():
+            def user_input_name(): # inputting name
+                global name
+                name = input("Please enter your first name: ")
+                if not name.isalpha():
+                    print("ERROR: Enter name without special characters, spaces or numbers\n")
+                    user_input_name()
+            user_input_name()
+            
+            def user_input_phone_number(): # inputting phone number
+                global phone_number
+                try:
+                    phone_number = int(input("Please enter your phone number: "))
+                    if len(str(phone_number)) != 10:
+                        print(f"ERROR: phone number should be of 10 numbers. {len(str(phone_number))} are given. Try Again!!\n")
+                        user_input_phone_number()
+                except ValueError:
+                    print("ERROR: Phone number should be a number. Try again.\n")
+                    user_input_phone_number()
+            user_input_phone_number() 
+            
+            def user_input_gmail(): # inputting gmail address
+                global user_gmail_add
+                print("\nWe're packing up things easy for you.\nEnter email address carefully.") 
+                user_gmail_add = input("Please provide us your gmail address[with @gmail.com]: ")  
+                if '@gmail.com' not in user_gmail_add: # checks whether @gmail.com in email address or not
+                    print("ERROR: Enter GMAIL properly.")
+                    user_input_gmail()
+            user_input_gmail()
+
+            def is_correct_():
+                is_correct = input("Did you enter all credentials correctly? [Y/N]: ") # asks all inputs are correct or not
+                if is_correct.upper() == 'N':
+                    userData()
+                elif is_correct.upper() == 'Y':
+                    # updating to database
+                    cursor.execute(f"insert ignore into customers(name, phnum, gmail) values ('{name}','{phone_number}','{user_gmail_add}')")
+                    connection.commit()
+                else:
+                    print("ERROR: Enter correct option.")
+                    is_correct_()
+            is_correct_()            
+        userData()
+        bookTickets()
+
+    elif choice == '3':
+        cancelBooking()
+    elif choice == '4':
+        print("You need authentication to access the database.")
+        username = input("Enter your username: ")
+        password = input("Enter your password: ")
+        if username == 'yashilraj_beesetty' and password == 'thedeveloper': 
+            print("\nACCESS GRANTED")
+            database()
+        else:
+            print("\nACCESS DENIED")
+            exit()
+    elif choice == '5':
+        exit()
+    else:
+        print("Please opt '2' as your option.")
+        user_choice() 
+
+menu()
+user_choice()
+
+connection.close()
+
+input("Press [Enter] to close the program:")
+print("Thank you for checking out my project. I appreciate it🤝.\n\t- Yashilraj")
+
+try: # Sending email for 'Thank you for using our services'
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.login('airasia.yashilraj@gmail.com','OnlyforCSproject2022')
+    
+    msg = EmailMessage()
+    msg.set_content(f'Thank you very much {name.upper()} for checking out my project. I appreciate it🤝.\n\t- Yashilraj')
+    msg['Subject'] = 'Thank Yew🙌'
+    msg['From'] = "airasia.yashilraj@gmail.com"
+    msg['To'] = user_gmail_add
+
+    server.send_message(msg)
+    server.quit()
+    exit()
+except:
+    exit()
