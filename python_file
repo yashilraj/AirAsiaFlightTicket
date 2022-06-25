@@ -9,7 +9,7 @@ cursor.execute('create database if not exists airasia;')
 connection.commit()
 connection.close()
 
-connection = connector.connect(host='localhost',user='root',passwd='yash',database='airasia')
+connection = connector.connect(host='localhost',user='root',passwd='yash',database='airasia') # username and password of database is "root" as default.
 cursor = connection.cursor()
 cursor.execute('create table if not exists customers(ticketID varchar(10), name varchar(20), phnum varchar(10), gmail varchar(30), destination varchar(20), seat varchar(4), fare varchar(5), status varchar(5));')
 connection.commit()
@@ -17,33 +17,7 @@ connection.commit()
 # Functions and processes starts from here [Menu at bottom]
 # OPTION 1
 def aboutMe():
-    message = """\n\n
-    A few compliments for you are given in the message below. If you found it. You're AWESOME.
-    __________________________________________________________________________________________________________________________________________
-
-    My name is Yashilraj.
-    
-    A quick intro for my project, my project books ticket for passengers to travel to selected cities
-    from Visakhapatnam, India.
-    
-    It took me hours to complete in writing the project. Lots of brainstorming. Lots of errors.
-    Lots of bug fixes. Lots of trails. And what it only concerns me is the "Experience" I experienced.
-
-    And I have a keen interest in doing what I love.
-
-    Steve Jobs once said: 
-    "Your WORK is going to fill a large part of your life, and the only way to be truly satisfied is to do what you
-    believe is GREAT WORK. And the only way to do great work is to LOVE WHAT YOU DO. If you haven't found it yet,
-    Keep looking. Don't settle."
-
-    Coming to the project, to make my project interesting I've sent an email as an "OTP-Verfication" to buy ticket,
-    instead of actually buying from bank account. And that's why I call this "Static Flight Ticket Booking".
-
-    If you did read the message till here, then Congratulations.
-    You've got these great quality called "ENTHUSIASM" and "APPRECIATION".
-    - Yashilraj
-    ___________________________________________________________________________________________________________________________________________
-    """
+    message = "About You"
     print(message)
 
 # OPTION 2
@@ -248,12 +222,12 @@ def bookTickets():
             msg =  EmailMessage()
             msg.set_content(f'"{otp}" is your OTP to buy {seat} ticket in {class_choice} with total fare of {total_fare} INR.\n\t- Team AirAsia\n\n\t-Yashilraj')
             msg['Subject'] = 'OTP for verfication'
-            msg['From'] = "airasia.yashilraj@gmail.com"
+            msg['From'] = "" # from gmail address
             msg['To'] = user_gmail_add
 
             # Configuring SMTP
             server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-            server.login('airasia.yashilraj@gmail.com','OnlyforCSproject2022')
+            server.login("", "") # one parameter for gmail address, another is the password. Both are in strings. 
             server.send_message(msg)
 
             user_otp = input("Enter OTP sent to you: ")
@@ -435,12 +409,12 @@ print("Thank you for checking out my project. I appreciate it🤝.\n\t- Yashilra
 
 try: # Sending email for 'Thank you for using our services'
     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-    server.login('airasia.yashilraj@gmail.com','OnlyforCSproject2022')
+    server.login("", "") # one parameter for gmail address, another is the password. Both are in strings. 
     
     msg = EmailMessage()
     msg.set_content(f'Thank you very much {name.upper()} for checking out my project. I appreciate it🤝.\n\t- Yashilraj')
     msg['Subject'] = 'Thank Yew🙌'
-    msg['From'] = "airasia.yashilraj@gmail.com"
+    msg['From'] = "" # Enter FROM gmail address
     msg['To'] = user_gmail_add
 
     server.send_message(msg)
